@@ -29,11 +29,7 @@ SHOT_DELAY = [60, 50, 30, 40, 30, 25, 25, 30]
 
 
 class UI:
-    def __init__(self):
-        self.fonts = {('None', 30): pygame.font.Font(None, 30)}
-
-    def update(self):
-        pass
+    fonts = {('None', 30): pygame.font.Font(None, 30)}
 
     def draw(self):
         i = 0
@@ -229,52 +225,59 @@ class Bonus:
             window.blit(self.image, self.rect)
 
 
-bullets = []
-objects = []
-Tank('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE))
-Tank('red', 650, 275, 0, (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_RCTRL))
-ui = UI()
+def main():
+    global objects, keys, bullets
 
-for _ in range(50):
-    while True:
-        x = randint(0, WIDTH // TILE - 1) * TILE
-        y = randint(1, HEIGHT // TILE - 1) * TILE
-        rect = pygame.Rect(x, y, TILE, TILE)
-        fined = False
-        for obj in objects:
-            if rect.colliderect(obj.rect): fined = True
+    objects = [
+        Tank('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE)),
+        Tank('red', 650, 275, 0, (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_RCTRL))]
+    bullets = []
+    ui = UI()
 
-        if not fined: break
+    for _ in range(50):
+        while True:
+            x = randint(0, WIDTH // TILE - 1) * TILE
+            y = randint(1, HEIGHT // TILE - 1) * TILE
+            rect = pygame.Rect(x, y, TILE, TILE)
+            fined = False
+            for obj in objects:
+                if rect.colliderect(obj.rect): fined = True
 
-    Block(x, y, TILE)
+            if not fined: break
 
-bonusTimer = 180
+        Block(x, y, TILE)
 
-game_over = False
-while not game_over:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game_over = True
+    bonusTimer = 180
 
-    keys = pygame.key.get_pressed()
+    game_over = False
+    while not game_over:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
 
-    if bonusTimer > 0:
-        bonusTimer -= 1
-    else:
-        Bonus(randint(50, WIDTH - 50), randint(50, HEIGHT - 50), randint(0, len(Bonus.imgBonuses) - 1))
-        bonusTimer = randint(120, 240)
+        keys = pygame.key.get_pressed()
 
-    for bullet in bullets: bullet.update()
-    for obj in objects: obj.update()
-    ui.update()
+        if bonusTimer > 0:
+            bonusTimer -= 1
+        else:
+            Bonus(randint(50, WIDTH - 50), randint(50, HEIGHT - 50), randint(0, len(Bonus.imgBonuses) - 1))
+            bonusTimer = randint(120, 240)
 
-    window.fill(COLORS['black'])
+        for bullet in bullets: bullet.update()
+        for obj in objects: obj.update()
 
-    for bullet in bullets: bullet.draw()
-    for obj in objects: obj.draw()
-    ui.draw()
+        window.fill(COLORS['black'])
 
-    pygame.display.update()
-    clock.tick(FPS)
+        for bullet in bullets: bullet.draw()
+        for obj in objects: obj.draw()
+        ui.draw()
 
-pygame.quit()
+        pygame.display.update()
+        clock.tick(FPS)
+
+    pygame.quit()
+    sys.exit()
+
+
+if __name__ == '__main__':
+    main()
